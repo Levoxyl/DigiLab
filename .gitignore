@@ -1,5 +1,12 @@
-bio_env
-*_digest_analysis/
-*_full_proteins/
+# Data and Results
+*.txt
+*.fasta
+*_proteins/
+*_analysis/
+*_results/
+
+# Environment and IDE
+bio_env/
+.vscode/
 __pycache__/
 *.pyc

@@ -1,0 +1,5 @@
+bio_env
+*_digest_analysis/
+*_full_proteins/
+__pycache__/
+*.pyc

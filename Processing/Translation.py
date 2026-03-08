@@ -32,7 +32,6 @@ def process_lab_directory(input_fasta):
 
             print(f"Done! Created {len(real_proteins)} files in {organism_folder}/")
 
-process_lab_directory("SARS_CoV_2.fasta")
 
 # Partial codon warning
 # If DNA sequence length is not a multiple of 3 -> the translate function  

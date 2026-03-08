@@ -30,4 +30,3 @@ def find_virus_parts(input_fasta):
                 f.write(p_seq)
                 
     print(f"Done! Created {len(real_proteins)} files in {output_dir}/")
-find_virus_parts("SARS_CoV_2.fasta")

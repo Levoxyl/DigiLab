@@ -2,9 +2,9 @@ import os
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
-def process_lab_directory(input_fasta):
-    base_name = os.path.splitext(input_fasta)[0]
-    organism_folder = f"{base_name}_proteins"
+def process_lab_directory(input_fasta, target_root):
+    base_name = os.path.splitext(os.path.basename(input_fasta))[0]
+    organism_folder = os.path.join(target_root, f"{base_name}_proteins")
     os.makedirs(organism_folder, exist_ok=True)
 
     print(f"Starting analysis for: {input_fasta}")

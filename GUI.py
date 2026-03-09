@@ -46,6 +46,7 @@ class BioWorkbench:
         tk.Button(btn_f, text="[ RUN_DIGEST ]", command=self.do_digest, width=18, bd=4).pack(side="left", padx=2)
         tk.Button(btn_f, text="[ IDENTIFY_VIRUS ]", command=self.do_db_search, width=18, bd=4).pack(side="left", padx=2)
         tk.Button(btn_f, text="[ CLEAR ]", command=lambda: self.log_box.delete('1.0', tk.END), width=10, bd=4).pack(side="left", padx=2)
+        tk.Button(btn_f, text="[ ANALYZE_CHEMISTRY ]", command=self.analyze_chemistry, width=20, bd=4).pack(side="left", padx=5)
 
     def log(self, msg):
         self.log_box.insert(tk.END, f"> {msg}\n")
@@ -91,23 +92,60 @@ class BioWorkbench:
                 break # Only need the first ID for identification
         except Exception as e:
             self.log(f"READ ERROR: {str(e)}")
+            
+    def analyze_chemistry(self):
+        input_f = self.fasta_path.get()
+        if not input_f:
+            messagebox.showerror("ERROR", "SELECT FASTA FIRST")
+            return
+        
+        self.log("RUNNING BIO-CHEMICAL SCAN...")
+        
+        try:
+            for record in SeqIO.parse(input_f, "fasta"):
+                protein_string = str(record.seq.translate(to_stop=False))
+                fragments = [f for f in protein_string.split('*') if len(f) > 30]
+                
+                sticky_boss = max(fragments, key=lambda p: ProteinAnalysis(p).gravy())
+                
+                analysed = ProteinAnalysis(sticky_boss)
+                self.log(f"--- RESULTS FOR {record.id} ---")
+                self.log(f"STICKIEST PROTEIN: {len(sticky_boss)} amino acids")
+                self.log(f"GRAVY SCORE: {analysed.gravy():.2f}")
+                
+                if analysed.gravy() > 0:
+                    self.log("PREDICTION: Internal / membrane-Anchored")
+                else:
+                    self.log("PREDICTION: External / Surface-Exposed")
+                    
+                aromatic = analysed.aromaticity()
+                self.log(f"STABILITY (Aromaticity): {aromatic*100:.1f}%")
+                
+        except Exception as e:
+            self.log(f"ANALYSES ERROR: {str(e)}")
 
     def do_translate(self):
         input_f = self.fasta_path.get()
-        if not input_f:
-            messagebox.showerror("ERROR", "PATHS NOT DEFINED")
+        out_root = self.output_dir.get()
+        
+        if not input_f or not out_root:
+            messagebox.showerror("ERROR", "SELECT FILE AND OUTPUT DIR")
             return
-        self.log("STARTING TRANSLATION PROCESS...")
-        Translation.process_lab_directory(input_f)
+            
+        self.log(f"STARTING TRANSLATION -> {out_root}")
+        Translation.process_lab_directory(input_f, out_root)
         self.log("TRANSLATION COMPLETE.")
 
     def do_digest(self):
         input_f = self.fasta_path.get()
-        if not input_f:
-            messagebox.showerror("ERROR", "PATHS NOT DEFINED")
+        out_root = self.output_dir.get()
+        
+        if not input_f or not out_root:
+            messagebox.showerror("ERROR", "SELECT FILE AND OUTPUT DIR")
             return
-        self.log("STARTING DIGEST PROCESS...")
-        Digest.find_virus_parts(input_f)
+            
+        self.log(f"STARTING DIGEST -> {out_root}")
+        Digest.find_virus_parts(input_f, out_root)
         self.log("DIGEST COMPLETE.")
 
 if __name__ == "__main__":

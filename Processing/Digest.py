@@ -2,9 +2,9 @@ import os
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
-def find_virus_parts(input_fasta):
-    base_name = os.path.splitext(input_fasta)[0]
-    output_dir = f"{base_name}_analysis"
+def find_virus_parts(input_fasta, target_root):
+    base_name = os.path.splitext(os.path.basename(input_fasta))[0]
+    output_dir = os.path.join(target_root, f"{base_name}_analysis")
     os.makedirs(output_dir, exist_ok=True)
     
     for record in SeqIO.parse(input_fasta, "fasta"):

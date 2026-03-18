@@ -10,7 +10,9 @@ def process_lab_directory(input_fasta, target_root):
     print(f"Starting analysis for: {input_fasta}")
 
     for record in SeqIO.parse(input_fasta, "fasta"):
-        full_protein = record.seq.translate()
+        remainder = len(record.seq) % 3
+        clean_seq = record.seq[:len(record.seq) - remainder]
+        full_protein = clean_seq.translate()
         all_proteins = str(full_protein).split('*')
         real_proteins = [p for p in all_proteins if len(p) > 20]
 

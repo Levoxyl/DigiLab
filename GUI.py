@@ -123,6 +123,37 @@ class BioWorkbench:
                 
         except Exception as e:
             self.log(f"ANALYSES ERROR: {str(e)}")
+            
+    def get_amino_distro(self):
+        input_f = self.fasta_path.get()
+        if not input_f:
+            messagebox.showerror("ERROR", "SELECT FASTA FIRST")
+            return
+
+        self.log("CALCULATING AMINO ACID DISTRIBUTION...")
+        
+        try:
+            for record in SeqIO.parse(input_f, "fasta"):
+                full_p = record.seq.translate(to_stop=True)
+                analysed = ProteinAnalysis(str(full_p))
+                distro = analysed.get_amino_acids_percent()
+                top_3 = sorted(distro.items(), key=lambda x: x[1], reverse=True)[:3]
+                
+                self.log(f"--- {record.id} COMPOSITION ---")
+                for aa, percent in top_3:
+                    self.log(f"AA '{aa}': {percent*100:.2f}%")
+                
+                if distro.get('L', 0) > 0.10:
+                    self.log("NOTICE: High Leucine content detected.")
+        except Exception as e:
+            self.log(f"DISTRO ERROR: {str(e)}")
+
+    # Update your CLEAR button in __init__ to this for speed:
+    # tk.Button(btn_f, text="[ CLEAR ]", command=self.clear_log, width=10, bd=4).pack(side="left", padx=2)
+
+    def clear_log(self):
+        self.log_box.delete('1.0', tk.END)
+        self.root.update_idletasks() # Forces an immediate visual refresh
 
     def do_translate(self):
         input_f = self.fasta_path.get()

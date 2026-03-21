@@ -1,14 +1,18 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import os
+from pathlib import Path
+from dotenv import load_dotenv  
 
-# Ensure the folder name and file names match your directory exactly (case-sensitive)
-from Processing import Translation
-from Processing import Digest
+from App.back.Processing import Translation
+from App.back.Processing import Digest
 
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from Bio import Entrez
+
+env_path = Path(__file__).resolve().parent.parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 class BioWorkbench:
     def __init__(self, root):
@@ -148,12 +152,9 @@ class BioWorkbench:
         except Exception as e:
             self.log(f"DISTRO ERROR: {str(e)}")
 
-    # Update your CLEAR button in __init__ to this for speed:
-    # tk.Button(btn_f, text="[ CLEAR ]", command=self.clear_log, width=10, bd=4).pack(side="left", padx=2)
-
     def clear_log(self):
         self.log_box.delete('1.0', tk.END)
-        self.root.update_idletasks() # Forces an immediate visual refresh
+        self.root.update_idletasks()
 
     def do_translate(self):
         input_f = self.fasta_path.get()

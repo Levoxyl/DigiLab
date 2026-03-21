@@ -6,9 +6,20 @@ from dotenv import load_dotenv
 
 from App.back.Processing import Translation
 from App.back.Processing import Digest
+
 from App.front.themes.retro import config as theme
 from App.front.themes.retro import config as retro_theme
 from App.front.themes.modern import config as modern_theme
+
+from App.front.themes.retro import config as retro_conf
+from App.front.themes.retro import button as retro_btn
+
+from App.front.themes.modern import config as modern_conf
+from App.front.themes.modern import button as modern_btn
+
+# Initial State
+current_conf = retro_conf
+current_btn = retro_btn
 
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
@@ -139,31 +150,32 @@ class BioWorkbench:
             self.log(f"ANALYSES ERROR: {str(e)}")
             
     def switch_theme(self):
-        global current_theme
-        # Toggle logic
-        if current_theme == retro_theme:
-            current_theme = modern_theme
-            self.log("SWITCHING TO: MODERN MODE")
+        global current_conf, current_btn
+        
+        # Toggle Logic
+        if current_conf == retro_conf:
+            current_conf = modern_conf
+            current_btn = modern_btn
+            self.log("SWITCHING TO: MODERN_UI")
         else:
-            current_theme = retro_theme
-            self.log("SWITCHING TO: RETRO MODE")
+            current_conf = retro_conf
+            current_btn = retro_btn
+            self.log("SWITCHING TO: RETRO_UI")
 
-        # --- UPDATE THE WINDOW ---
-        self.root.title(current_theme.WINDOW_TITLE)
-        self.root.configure(bg=current_theme.BG_COLOR)
-
-        # --- UPDATE THE HEADER ---
-        # We find the header (it's the first child of root) and re-config it
+        self.root.configure(bg=current_conf.BG_COLOR)
+    
         for widget in self.root.winfo_children():
             if isinstance(widget, tk.Label) and "LAB_TERMINAL" in widget.cget("text"):
-                widget.configure(**current_theme.HEADER_STYLE)
+                widget.configure(**current_conf.HEADER_STYLE)
             
-            # --- UPDATE THE LOG BOX ---
             if isinstance(widget, tk.Text):
-                widget.configure(**current_theme.LOG_STYLE)
-
-        # Note: Buttons won't change yet because we haven't 
-        # linked them to current_theme.BUTTON_STYLE in __init__ yet!
+                widget.configure(**current_conf.LOG_STYLE)
+                
+            if isinstance(widget, tk.Frame):
+                widget.configure(bg=current_conf.BG_COLOR) 
+                for sub in widget.winfo_children():
+                    if isinstance(sub, tk.Button):
+                        sub.configure(**current_btn.STYLE)
             
     def get_amino_distro(self):
         input_f = self.fasta_path.get()

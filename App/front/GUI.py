@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 from App.back.Processing import Translation
 from App.back.Processing import Digest
+from App.front.themes.retro import config as theme
+from App.front.themes.retro import config as retro_theme
+from App.front.themes.modern import config as modern_theme
 
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
@@ -14,19 +17,21 @@ from Bio import Entrez
 env_path = Path(__file__).resolve().parent.parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
+current_theme = retro_theme
+
 class BioWorkbench:
     def __init__(self, root):
         self.root = root
-        self.root.title("GENOMIC_ANALYZER_V1.1")
-        self.root.geometry("700x600")
-        self.root.configure(bg="#d9d9d9")
+        self.root.title(current_theme.WINDOW_TITLE)
+        self.root.geometry(current_theme.WINDOW_SIZE)
+        self.root.configure(bg=current_theme.BG_COLOR)
 
         self.fasta_path = tk.StringVar()
         self.output_dir = tk.StringVar()
 
         # --- HEADER ---
-        tk.Label(root, text="LAB_TERMINAL: DNA_DIGEST_SYSTEM", bg="#000080", fg="white", 
-                 font=("Courier", 12, "bold"), relief="raised", bd=3).pack(fill="x", pady=5)
+        tk.Label(root, text="LAB_TERMINAL: DNA_DIGEST_SYSTEM", 
+                 **current_theme.HEADER_STYLE).pack(fill="x", pady=5)
 
         # --- INPUTS ---
         input_frame = tk.Frame(root, bg="#d9d9d9", bd=2, relief="groove")
@@ -39,17 +44,22 @@ class BioWorkbench:
         tk.Entry(input_frame, textvariable=self.output_dir, width=60, bg="white").grid(row=1, column=1, padx=5)
 
         # --- LOG BOX ---
-        self.log_box = tk.Text(root, height=15, bg="black", fg="#00ff00", font=("Courier", 9))
+        self.log_box = tk.Text(root, height=15, **current_theme.LOG_STYLE)
         self.log_box.pack(padx=10, pady=5, fill="both")
 
-        # --- BUTTONS ---
-        btn_f = tk.Frame(root, bg="#d9d9d9")
+        # --- BUTTONS FRAME ---
+        # We define this BEFORE we try to put buttons inside it
+        btn_f = tk.Frame(root, bg=current_theme.BG_COLOR)
         btn_f.pack(pady=10)
+
+        # NOW we can add the Toggle button
+        tk.Button(btn_f, text="[ TOGGLE_THEME ]", 
+                  command=self.switch_theme, 
+                  width=20, bg="yellow", fg="black").pack(side="left", padx=5)
 
         tk.Button(btn_f, text="[ RUN_TRANSLATE ]", command=self.do_translate, width=18, bd=4).pack(side="left", padx=2)
         tk.Button(btn_f, text="[ RUN_DIGEST ]", command=self.do_digest, width=18, bd=4).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ IDENTIFY_VIRUS ]", command=self.do_db_search, width=18, bd=4).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ CLEAR ]", command=lambda: self.log_box.delete('1.0', tk.END), width=10, bd=4).pack(side="left", padx=2)
+        tk.Button(btn_f, text="[ CLEAR ]", command=self.clear_log, width=10, bd=4).pack(side="left", padx=2)
         tk.Button(btn_f, text="[ ANALYZE_CHEMISTRY ]", command=self.analyze_chemistry, width=20, bd=4).pack(side="left", padx=5)
 
     def log(self, msg):
@@ -127,6 +137,33 @@ class BioWorkbench:
                 
         except Exception as e:
             self.log(f"ANALYSES ERROR: {str(e)}")
+            
+    def switch_theme(self):
+        global current_theme
+        # Toggle logic
+        if current_theme == retro_theme:
+            current_theme = modern_theme
+            self.log("SWITCHING TO: MODERN MODE")
+        else:
+            current_theme = retro_theme
+            self.log("SWITCHING TO: RETRO MODE")
+
+        # --- UPDATE THE WINDOW ---
+        self.root.title(current_theme.WINDOW_TITLE)
+        self.root.configure(bg=current_theme.BG_COLOR)
+
+        # --- UPDATE THE HEADER ---
+        # We find the header (it's the first child of root) and re-config it
+        for widget in self.root.winfo_children():
+            if isinstance(widget, tk.Label) and "LAB_TERMINAL" in widget.cget("text"):
+                widget.configure(**current_theme.HEADER_STYLE)
+            
+            # --- UPDATE THE LOG BOX ---
+            if isinstance(widget, tk.Text):
+                widget.configure(**current_theme.LOG_STYLE)
+
+        # Note: Buttons won't change yet because we haven't 
+        # linked them to current_theme.BUTTON_STYLE in __init__ yet!
             
     def get_amino_distro(self):
         input_f = self.fasta_path.get()

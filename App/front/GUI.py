@@ -1,6 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+
 import os
+import sys
+
+root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if root_path not in sys.path:
+    sys.path.insert(0, root_path)
+
+
 from pathlib import Path
 from dotenv import load_dotenv  
 

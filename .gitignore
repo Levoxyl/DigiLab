@@ -6,7 +6,7 @@
 *_results/
 
 # Environment and IDE
-bio_env/
+venv/
 .vscode/
 __pycache__/
 *.pyc

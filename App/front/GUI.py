@@ -34,10 +34,9 @@ load_dotenv(dotenv_path=env_path)
 
 
 class BioWorkbench:
-    def __init__(self, root, active_theme, active_btn_style):
+    def __init__(self, root, active_theme):
         self.root = root
         self.theme = active_theme
-        self.btn_style = active_btn_style
 
         self.root.title(self.theme.WINDOW_TITLE)
         self.root.geometry(self.theme.WINDOW_SIZE)

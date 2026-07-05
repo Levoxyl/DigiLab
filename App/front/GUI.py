@@ -25,10 +25,6 @@ from App.front.themes.retro import button as retro_btn
 from App.front.themes.modern import config as modern_conf
 from App.front.themes.modern import button as modern_btn
 
-# Initial State
-current_conf = retro_conf
-current_btn = retro_btn
-
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 from Bio import Entrez
@@ -36,21 +32,23 @@ from Bio import Entrez
 env_path = Path(__file__).resolve().parent.parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
-current_theme = retro_theme
 
 class BioWorkbench:
-    def __init__(self, root):
+    def __init__(self, root, active_theme, active_btn_style):
         self.root = root
-        self.root.title(current_theme.WINDOW_TITLE)
-        self.root.geometry(current_theme.WINDOW_SIZE)
-        self.root.configure(bg=current_theme.BG_COLOR)
+        self.theme = active_theme
+        self.btn_style = active_btn_style
+
+        self.root.title(self.theme.WINDOW_TITLE)
+        self.root.geometry(self.theme.WINDOW_SIZE)
+        self.root.configure(bg=self.theme.BG_COLOR)
 
         self.fasta_path = tk.StringVar()
         self.output_dir = tk.StringVar()
 
         # --- HEADER ---
         tk.Label(root, text="LAB_TERMINAL: DNA_DIGEST_SYSTEM", 
-                 **current_theme.HEADER_STYLE).pack(fill="x", pady=5)
+                 **self.theme.HEADER_STYLE).pack(fill="x", pady=5)
 
         # --- INPUTS ---
         input_frame = tk.Frame(root, bg="#d9d9d9", bd=2, relief="groove")
@@ -63,12 +61,12 @@ class BioWorkbench:
         tk.Entry(input_frame, textvariable=self.output_dir, width=60, bg="white").grid(row=1, column=1, padx=5)
 
         # --- LOG BOX ---
-        self.log_box = tk.Text(root, height=15, **current_theme.LOG_STYLE)
+        self.log_box = tk.Text(root, height=15, **self.theme.LOG_STYLE)
         self.log_box.pack(padx=10, pady=5, fill="both")
 
         # --- BUTTONS FRAME ---
         # We define this BEFORE we try to put buttons inside it
-        btn_f = tk.Frame(root, bg=current_theme.BG_COLOR)
+        btn_f = tk.Frame(root, bg=self.theme.BG_COLOR)
         btn_f.pack(pady=10)
 
         # NOW we can add the Toggle button

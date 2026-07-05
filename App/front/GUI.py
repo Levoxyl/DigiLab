@@ -8,22 +8,11 @@ root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if root_path not in sys.path:
     sys.path.insert(0, root_path)
 
-
 from pathlib import Path
 from dotenv import load_dotenv  
 
 from App.back.Processing import Translation
 from App.back.Processing import Digest
-
-from App.front.themes.retro import config as theme
-from App.front.themes.retro import config as retro_theme
-from App.front.themes.modern import config as modern_theme
-
-from App.front.themes.retro import config as retro_conf
-from App.front.themes.retro import button as retro_btn
-
-from App.front.themes.modern import config as modern_conf
-from App.front.themes.modern import button as modern_btn
 
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
@@ -34,44 +23,19 @@ load_dotenv(dotenv_path=env_path)
 
 
 class BioWorkbench:
-    def __init__(self, root, active_theme):
+    def __init__(self, root, theme_pack):
         self.root = root
-        self.theme = active_theme
+        self.theme_pack = theme_pack
 
-        self.root.title(self.theme.WINDOW_TITLE)
-        self.root.geometry(self.theme.WINDOW_SIZE)
-        self.root.configure(bg=self.theme.BG_COLOR)
+        self.theme = self.theme_pack.config
+        self.btn_style = self.theme_pack.button
 
         self.fasta_path = tk.StringVar()
         self.output_dir = tk.StringVar()
+        self.log_box = None 
 
-        # --- HEADER ---
-        tk.Label(root, text="LAB_TERMINAL: DNA_DIGEST_SYSTEM", 
-                 **self.theme.HEADER_STYLE).pack(fill="x", pady=5)
-
-        # --- INPUTS ---
-        input_frame = tk.Frame(root, bg="#d9d9d9", bd=2, relief="groove")
-        input_frame.pack(fill="x", padx=10, pady=10)
-
-        tk.Button(input_frame, text="FILE...", command=self.select_file, width=10).grid(row=0, column=0, padx=5, pady=5)
-        tk.Entry(input_frame, textvariable=self.fasta_path, width=60, bg="white").grid(row=0, column=1, padx=5)
-
-        tk.Button(input_frame, text="DIR...", command=self.select_folder, width=10).grid(row=1, column=0, padx=5, pady=5)
-        tk.Entry(input_frame, textvariable=self.output_dir, width=60, bg="white").grid(row=1, column=1, padx=5)
-
-        # --- LOG BOX ---
-        self.log_box = tk.Text(root, height=15, **self.theme.LOG_STYLE)
-        self.log_box.pack(padx=10, pady=5, fill="both")
-
-        # --- BUTTONS FRAME ---
-        # We define this BEFORE we try to put buttons inside it
-        btn_f = tk.Frame(root, bg=self.theme.BG_COLOR)
-        btn_f.pack(pady=10)
-
-        tk.Button(btn_f, text="[ RUN_TRANSLATE ]", command=self.do_translate, **self.btn_style.STYLE).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ RUN_DIGEST ]", command=self.do_digest, **self.btn_style.STYLE).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ CLEAR ]", command=self.clear_log, **self.btn_style.STYLE).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ ANALYZE_CHEMISTRY ]", command=self.analyze_chemistry, **self.btn_style.STYLE).pack(side="left", padx=5)
+        self.ui = self.theme_pack.layout_class(self.root, self.theme_pack, controller=self)
+        self.ui.build_interface()
 
     def log(self, msg):
         self.log_box.insert(tk.END, f"> {msg}\n")

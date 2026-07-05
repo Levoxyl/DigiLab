@@ -69,15 +69,10 @@ class BioWorkbench:
         btn_f = tk.Frame(root, bg=self.theme.BG_COLOR)
         btn_f.pack(pady=10)
 
-        # NOW we can add the Toggle button
-        tk.Button(btn_f, text="[ TOGGLE_THEME ]", 
-                  command=self.switch_theme, 
-                  width=20, bg="yellow", fg="black").pack(side="left", padx=5)
-
-        tk.Button(btn_f, text="[ RUN_TRANSLATE ]", command=self.do_translate, width=18, bd=4).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ RUN_DIGEST ]", command=self.do_digest, width=18, bd=4).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ CLEAR ]", command=self.clear_log, width=10, bd=4).pack(side="left", padx=2)
-        tk.Button(btn_f, text="[ ANALYZE_CHEMISTRY ]", command=self.analyze_chemistry, width=20, bd=4).pack(side="left", padx=5)
+        tk.Button(btn_f, text="[ RUN_TRANSLATE ]", command=self.do_translate, **self.btn_style.STYLE).pack(side="left", padx=2)
+        tk.Button(btn_f, text="[ RUN_DIGEST ]", command=self.do_digest, **self.btn_style.STYLE).pack(side="left", padx=2)
+        tk.Button(btn_f, text="[ CLEAR ]", command=self.clear_log, **self.btn_style.STYLE).pack(side="left", padx=2)
+        tk.Button(btn_f, text="[ ANALYZE_CHEMISTRY ]", command=self.analyze_chemistry, **self.btn_style.STYLE).pack(side="left", padx=5)
 
     def log(self, msg):
         self.log_box.insert(tk.END, f"> {msg}\n")
@@ -154,34 +149,6 @@ class BioWorkbench:
                 
         except Exception as e:
             self.log(f"ANALYSES ERROR: {str(e)}")
-            
-    def switch_theme(self):
-        global current_conf, current_btn
-        
-        # Toggle Logic
-        if current_conf == retro_conf:
-            current_conf = modern_conf
-            current_btn = modern_btn
-            self.log("SWITCHING TO: MODERN_UI")
-        else:
-            current_conf = retro_conf
-            current_btn = retro_btn
-            self.log("SWITCHING TO: RETRO_UI")
-
-        self.root.configure(bg=current_conf.BG_COLOR)
-    
-        for widget in self.root.winfo_children():
-            if isinstance(widget, tk.Label) and "LAB_TERMINAL" in widget.cget("text"):
-                widget.configure(**current_conf.HEADER_STYLE)
-            
-            if isinstance(widget, tk.Text):
-                widget.configure(**current_conf.LOG_STYLE)
-                
-            if isinstance(widget, tk.Frame):
-                widget.configure(bg=current_conf.BG_COLOR) 
-                for sub in widget.winfo_children():
-                    if isinstance(sub, tk.Button):
-                        sub.configure(**current_btn.STYLE)
             
     def get_amino_distro(self):
         input_f = self.fasta_path.get()

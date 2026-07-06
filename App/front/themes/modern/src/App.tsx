@@ -1,11 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+import { QWebChannel } from './qwebchannel'
+
+// Define an explicit structural shape for our Python Qt bridge
+interface QtBackendBridge {
+  process_dna_seq: (fastaPath: string, callback: (response: string) => void) => void;
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [backendStatus, setBackendStatus] = useState("System Offline: Initializing...")
+  const [pyBackend, setPyBackend] = useState<QtBackendBridge | null>(null)
+
+  useEffect(() => {
+    // Check global scope objects exposed by the PyQt container window
+    const extendedWindow = window as unknown as {
+      qtWidget?: { webChannelTransport: unknown };
+      QtWebChannel?: unknown;
+    }
+
+    if (extendedWindow.qtWidget) {
+      new QWebChannel(extendedWindow.qtWidget.webChannelTransport, (channel) => {
+        const backend = channel.objects.pyBack as QtBackendBridge
+        setPyBackend(backend)
+        
+        // Use a functional state update to comply with react-hooks/set-state-in-effect
+        setBackendStatus(() => "System Bridge Operational")
+      })
+    } else {
+      setBackendStatus(() => "Running in standalone browser mode (Backend detached)")
+    }
+  }, [])
+
+  const triggerBackendAnalysis = () => {
+    if (pyBackend) {
+      setBackendStatus("Sending layout request down the pipe...")
+      
+      pyBackend.process_dna_seq("Sample_Sequence.fasta", (response: string) => {
+        setBackendStatus(`Python Result: ${response}`)
+      })
+    } else {
+      alert("Backend bridge connection is currently unavailable.")
+    }
+  }
 
   return (
     <>
@@ -16,105 +56,14 @@ function App() {
           <img src={viteLogo} className="vite" alt="Vite logo" />
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1>Modern Workbench Engine</h1>
+          <p style={{ color: '#4ade80', fontFamily: 'monospace' }}>{backendStatus}</p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
+
+        <button type="button" className="counter" onClick={triggerBackendAnalysis}>
+          TRIGGER PYQT BACKEND PROCESSING
         </button>
       </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
     </>
   )
 }

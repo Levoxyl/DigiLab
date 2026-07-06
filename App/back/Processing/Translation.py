@@ -2,37 +2,41 @@ import os
 from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
-def process_lab_directory(input_fasta, target_root):
-    base_name = os.path.splitext(os.path.basename(input_fasta))[0]
-    organism_folder = os.path.join(target_root, f"{base_name}_proteins")
-    os.makedirs(organism_folder, exist_ok=True)
+class Translation:
+    """" Handles DNA to protein translation and analysis tasks. """
 
-    print(f"Starting analysis for: {input_fasta}")
+    @staticmethod
+    def process_lab_directory(input_fasta, target_root):
+        base_name = os.path.splitext(os.path.basename(input_fasta))[0]
+        organism_folder = os.path.join(target_root, f"{base_name}_proteins")
+        os.makedirs(organism_folder, exist_ok=True)
 
-    for record in SeqIO.parse(input_fasta, "fasta"):
-        remainder = len(record.seq) % 3
-        clean_seq = record.seq[:len(record.seq) - remainder]
-        full_protein = clean_seq.translate()
-        all_proteins = str(full_protein).split('*')
-        real_proteins = [p for p in all_proteins if len(p) > 20]
+        print(f"Starting analysis for: {input_fasta}")
 
-        for i , p_seq in enumerate(real_proteins):
-            try:
-                analysed_p = ProteinAnalysis(p_seq)
-                weight = analysed_p.molecular_weight()
-                file_name = f"{base_name}_fragment_{i}.txt"
-                file_path = os.path.join(organism_folder, file_name)
+        for record in SeqIO.parse(input_fasta, "fasta"):
+            remainder = len(record.seq) % 3
+            clean_seq = record.seq[:len(record.seq) - remainder]
+            full_protein = clean_seq.translate()
+            all_proteins = str(full_protein).split('*')
+            real_proteins = [p for p in all_proteins if len(p) > 20]
 
-                with open(file_path, 'w') as f:
-                    f.write(f"Source: {record.description}\n")
-                    f.write(f"Fragment index: {i}\n")
-                    f.write(f"Molecular Weight: {weight:.2f} Daltons\n")
-                    f.write(f"-" * 20 + "\n")
-                    f.write(p_seq)
-            except Exception as e:
-                print(f"Skipped fragment {i} due to calculation error.")
+            for i , p_seq in enumerate(real_proteins):
+                try:
+                    analysed_p = ProteinAnalysis(p_seq)
+                    weight = analysed_p.molecular_weight()
+                    file_name = f"{base_name}_fragment_{i}.txt"
+                    file_path = os.path.join(organism_folder, file_name)
 
-            print(f"Done! Created {len(real_proteins)} files in {organism_folder}/")
+                    with open(file_path, 'w') as f:
+                        f.write(f"Source: {record.description}\n")
+                        f.write(f"Fragment index: {i}\n")
+                        f.write(f"Molecular Weight: {weight:.2f} Daltons\n")
+                        f.write(f"-" * 20 + "\n")
+                        f.write(p_seq)
+                except Exception as e:
+                    print(f"Skipped fragment {i} due to calculation error.")
+
+                print(f"Done! Created {len(real_proteins)} files in {organism_folder}/")
 
 
 # Partial codon warning

@@ -33,8 +33,8 @@ class ThemeLayout:
         self.browser.show()
 
 
-        self.root.title(self.theme.window_title)
-        self.root.geometry(self.theme.window_size)
+        # self.root.title(self.theme.window_title)
+        # self.root.geometry(self.theme.window_size)
 
-        browser_frame = tk.Frame(self.root)
-        browser_frame.pack(fill="both", expand=True)
+        # browser_frame = tk.Frame(self.root)
+        # browser_frame.pack(fill="both", expand=True)

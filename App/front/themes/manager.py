@@ -25,3 +25,36 @@ class ThemeManager:
         
     def get_theme(self, theme_id):
         return self._registry.get(theme_id, self._registry["retro"])
+    
+    def launch_theme_engine(self, theme_id, controller):
+        """
+        Evaluates the rendering target profile and establishes the 
+        target system enviroment execution loop 
+        """
+        theme_pack = self.get_theme(theme_id)
+       
+        if theme_pack.render_engine == "chromium":
+                import sys
+                from PyQt6.QtWidgets import QApplication, QMainWindow
+
+                app = QApplication(sys.argv)
+                main_window = QMainWindow()
+
+                main_window.setWindowTitle(theme_pack.config.window_title)
+
+                dims = theme_pack.config.window_size.split("x")
+                if len(dims) == 2:
+                    main_window.resize(int(dims[0]), int(dims[1]))
+
+                ui = theme_pack.layout_class(main_window, theme_pack, controller)
+                ui.build_interface()
+
+                main_window.show()
+                sys.exit(app.exec())
+        else:
+            import tkinter as tk
+            from App.front.GUI import BioWorkbench
+
+            main_root = tk.Tk()
+            app = BioWorkbench(main_root, theme_pack)
+            main_window.mainloop()

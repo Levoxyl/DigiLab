@@ -1,3 +1,5 @@
+import os
+
 from App.front.components.config import AppConfigComponent
 from App.front.components.button import ButtonComponent
 
@@ -35,7 +37,22 @@ class ThemeManager:
        
         if theme_pack.render_engine == "chromium":
                 import sys
+                import os
                 from PyQt6.QtWidgets import QApplication, QMainWindow
+
+               # Force pure software fallback rendering without GPU hooks
+                os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
+                os.environ["QT_X11_NO_MITSHM"] = "1"
+                os.environ["QT_DISABLE_WEBGL_HARDWARE_ACCELERATION"] = "1"
+                os.environ["QT_QUICK_BACKEND"] = "software"
+                os.environ["QSG_RHI_BACKEND"] = "softwarecontext" 
+                os.environ["QT_API"] = "pyqt6"
+
+                # Keep your existing fallback args to catch background loops
+                sys.argv.append("--no-sandbox")
+                sys.argv.append("--disable-gpu")
+                sys.argv.append("--disable-software-rasterizer")
+                sys.argv.append("--ignore-gpu-blocklist")
 
                 app = QApplication(sys.argv)
                 main_window = QMainWindow()
@@ -55,6 +72,6 @@ class ThemeManager:
             import tkinter as tk
             from App.front.GUI import BioWorkbench
 
-            main_root = tk.Tk()
-            app = BioWorkbench(main_root, theme_pack)
+            main_window = tk.Tk()
+            app = BioWorkbench(main_window, theme_pack)
             main_window.mainloop()

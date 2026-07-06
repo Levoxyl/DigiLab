@@ -28,9 +28,12 @@ class AppLauncher:
         selected_theme_pack = self.theme_manager.get_theme(theme_id)
         self.root.destroy()
 
-        main_window = tk.Tk()
-        app = BioWorkbench(main_window, selected_theme_pack)
-        main_window.mainloop()
+        if selected_theme_pack.render_engine == "chromium":
+            self.theme_manager.launch_theme_engine(theme_id, controller=self)
+        else:
+            main_window = tk.Tk()
+            app = BioWorkbench(main_window, selected_theme_pack)
+            main_window.mainloop()
 
 if __name__ == "__main__":
     launcher_root = tk.Tk()

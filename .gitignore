@@ -10,3 +10,8 @@ venv/
 .vscode/
 __pycache__/
 *.pyc
+
+# Vite
+dist/
+node_modules/
+package-lock.json

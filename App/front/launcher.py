@@ -28,6 +28,8 @@ class AppLauncher:
         selected_theme_pack = self.theme_manager.get_theme(theme_id)
         self.root.destroy()
 
+        self.theme_manager.launch_theme_engine(theme_id, controller=None)
+
         main_window = tk.Tk()
         app = BioWorkbench(main_window, selected_theme_pack)
         main_window.mainloop()

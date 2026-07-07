@@ -1,5 +1,5 @@
 import os
-from PyQt6.QtCore import QObject, pyqtSlot, QUrl
+from PyQt6.QtCore import QObject, pyqtSlot, QUrl, QTimer
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
 
@@ -29,21 +29,13 @@ class ThemeLayout:
         self.channel.registerObject("pyBack", self.bridge)
         self.browser.page().setWebChannel(self.channel)
 
-        dist_path = os.path.abspath(os.path.join(os.path.dirname(__file__),"dist", "index.html"))
-
         if self.IS_DEV_MODE:
-            print("🔗 Connecting engine frame to live Vite local server...")
-            self.browser.load(QUrl("http://172.27.127.59:5173"))
+            print("🔗 Connecting engine frame to live native Windows Vite server...")
+            target_url = QUrl("http://127.0.0.1:5173")
+            QTimer.singleShot(500 , lambda: self.browser.load(target_url))
         else:
             dist_path = os.path.abspath(os.path.join(os.path.dirname(__file__),"dist", "index.html"))
             self.browser.setUrl(QUrl.fromLocalFile(dist_path))
 
         self.root.setCentralWidget(self.browser)
         self.browser.show()
-
-
-        # self.root.title(self.theme.window_title)
-        # self.root.geometry(self.theme.window_size)
-
-        # browser_frame = tk.Frame(self.root)
-        # browser_frame.pack(fill="both", expand=True)

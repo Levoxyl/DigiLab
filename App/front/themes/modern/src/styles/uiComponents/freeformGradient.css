@@ -1,29 +1,28 @@
 @import "../animations/fluidGradients.css";
 @import "../animations/filmGrain.css";
 
-/* --- LAYOUT ORCHESTRATION ARCHITECTURE --- */
-
+/* Base structural canvas allocation frame */
 .freeform-gradient-wrapper {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #b2cfc6;
   z-index: 1;
+  background-color: #b2cfc6;
+  overflow: hidden;
 }
 
 .background-content-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding-left: 8%;
-  box-sizing: border-box;
-  opacity: 0;
+  pointer-events: none;
+}
+
+.background-content-container>* {
+  pointer-events: auto;
 }
 
 .freeform-gradient-wrapper[data-stage="1"] .background-content-container,
@@ -32,26 +31,41 @@
   opacity: 1;
 }
 
-/* CACHED LAYER: The animation loop moves up here to reuse the static vector bitmap */
-.hardware-vector-layer-cache {
+.gpu-canvas-cache-container {
   position: absolute;
-  inset: -100px; /* Expands bounds slightly to prevent edge-clipping during animations */
-  z-index: 2;
-  backface-visibility: hidden;
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
-  opacity: 0;
-  transition: opacity 0.6s ease-out;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
 }
 
-.freeform-gradient-wrapper[data-stage="2"] .hardware-vector-layer-cache,
-.freeform-gradient-wrapper[data-stage="3"] .hardware-vector-layer-cache {
+/* Auto-scale layout modifier for small or ultra-wide viewports without re-rendering vectors */
+@media (max-width: 1920px),
+(max-height: 1080px) {
+  .gpu-canvas-cache-container {
+    width: 120vw;
+    height: 120vh;
+    top: -10vh;
+    left: -10vw;
+  }
+}
+
+.freeform-gradient-wrapper[data-stage="2"] .gpu-canvas-cache-container,
+.freeform-gradient-wrapper[data-stage="3"] .gpu-canvas-cache-container {
   opacity: 1;
 }
 
-/* TRIGGER THE CACHED MOTION EXCLUSIVELY AT STAGE 3 */
-.freeform-gradient-wrapper[data-stage="3"] .hardware-vector-layer-cache {
+.freeform-gradient-wrapper[data-stage="3"] .abstract-fluid-matrix {
+  transform-style: preserve-3d;
+  contain: layout style paint;
+}
+
+/* ONLY ANIMATE THE ISOLATED SHAPES INSIDE THE CANVAS */
+.freeform-gradient-wrapper[data-stage="3"] .stream-primary {
   animation: dynamic-river-main 24s ease-in-out infinite alternate;
+}
+
+.freeform-gradient-wrapper[data-stage="3"] .stream-tertiary {
+  animation: dynamic-river-bottom 20s ease-in-out infinite alternate;
 }
 
 .abstract-fluid-matrix {
@@ -62,15 +76,14 @@
   pointer-events: none;
 }
 
-/* STATIC VECTOR LOCK: Separating filters ensures the blur calculations are cached */
 .abstract-fluid-matrix .vector-blob {
   transform-origin: 960px 540px;
   backface-visibility: hidden;
-  transform: translate3d(0, 0, 0);
+  will-change: transform;
   filter: none;
 }
 
 .freeform-gradient-wrapper[data-stage="3"] .abstract-fluid-matrix .vector-blob {
   filter: blur(110px);
-  transition: filter 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: filter 0.8s ease-out;
 }

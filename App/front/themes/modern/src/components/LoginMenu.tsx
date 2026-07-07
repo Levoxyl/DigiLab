@@ -1,4 +1,6 @@
 import React from 'react';
+/* Fix: Explicitly mapped relative directory stepping to target your uiComponents folder */
+import AbstractRiverBackground from '../styles/uiComponents/AbstractRiverBackground';
 
 interface LoginMenuProps {
   backendStatus: string;
@@ -7,16 +9,7 @@ interface LoginMenuProps {
 
 const LoginMenu: React.FC<LoginMenuProps> = ({ backendStatus, onTriggerAnalysis }) => {
   return (
-    <div className="login-bg-container">
-      {/* Film Grain Layer Overlays Everything */}
-      <div className="film-grain-overlay"></div>
-
-      {/* Freeform Smooth Mesh Gradient Spheres */}
-      <div className="mesh-blob blob1"></div>
-      <div className="mesh-blob blob2"></div>
-      <div className="mesh-blob blob3"></div>
-
-      {/* Clean Left-Aligned Core Layout - No Backdrop Wrapper box */}
+    <AbstractRiverBackground>
       <div className="dashboard-layout-engine">
         <header className="menu-header">
           <h1>GENOMIC ANALYZER</h1>
@@ -27,17 +20,15 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ backendStatus, onTriggerAnalysis 
           <button type="button" className="sharp-gradient-btn">
             LAUNCH RETRO WORKBENCH
           </button>
-          
           <button type="button" className="sharp-gradient-btn" onClick={onTriggerAnalysis}>
             RUN SEQUENCE ANALYZER
           </button>
-          
           <button type="button" className="sharp-gradient-btn">
             VIEW CONNECTION LOGS
           </button>
         </div>
       </div>
-    </div>
+    </AbstractRiverBackground>
   );
 };
 

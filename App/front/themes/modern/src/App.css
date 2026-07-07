@@ -1,77 +1,7 @@
-/* Ensure the canvas fills the frame perfectly */
-body, html {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
+/* 1. ALWAYS PLACE THIS IMPORT AT THE VERY TOP OF APP.CSS */
+@import "./styles/uiComponents/freeformGradient.css";
 
-/* THE SWAPPED BACKGROUND CANVAS */
-.login-bg-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(circle at 50% 50%, #cbe0da, #b2cfc6); 
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 8%;
-  box-sizing: border-box;
-}
-
-/* CHROMATIC SYSTEM BLOBS */
-.mesh-blob {
-  position: absolute;
-  border-radius: 50%;
-  /* Kept sharp enough to recognize the geometry, soft enough to blend */
-  filter: blur(85px); 
-  opacity: 0.75;
-  pointer-events: none;
-  mix-blend-mode: multiply;
-}
-
-/* BLOB 1: Moved from top-left down to the bottom-left corner */
-.blob1 {
-  width: 750px;
-  height: 750px;
-  bottom: -25%; /* Anchored deep into the bottom floor */
-  left: -15%;   /* Pushed into the left wall under the buttons */
-  background: radial-gradient(circle, #2a7a77 0%, #68d4d0 70%, transparent 100%);
-}
-
-/* BLOB 2: Top Center, upscaled 20%, sliced exactly in half */
-.blob2 {
-  width: 780px; /* 20% upscale from 650px */
-  height: 780px;
-  top: -45%;    /* Shifted up so only the bottom half peeks into the viewport */
-  left: 50%;
-  transform: translateX(-50%); /* Perfectly centered horizontally */
-  background: radial-gradient(circle, #338a87 0%, #68d4d0 75%, transparent 100%);
-}
-
-/* BLOB 3: Bottom Right Corner, upscaled 30%, tucked tightly away */
-.blob3 {
-  width: 650px; /* 30% upscale from 500px */
-  height: 650px;
-  bottom: -20%; /* Tucked deep into the corner */
-  right: -15%;  /* Pushed past the right edge */
-  background: radial-gradient(circle, #1a5c59 0%, #68d4d0 80%, transparent 100%);
-}
-
-/* UPSCALED FILM GRAIN OVERLAY */
-.film-grain-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  opacity: 0.08; /* Slightly more visible for textured premium surfaces */
-  background-repeat: repeat;
-  /* Reduced baseFrequency from 0.85 to 0.35 to upscale the noise chunks significantly */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-}
-
-/* CORE LAYOUT ENGINE */
+/* 2. CORE LAYOUT ENGINE */
 .dashboard-layout-engine {
   position: relative;
   z-index: 10;
@@ -82,7 +12,7 @@ body, html {
   gap: 3.5rem;
 }
 
-/* TYPOGRAPHY CONTRAST */
+/* 3. TYPOGRAPHY CONTRAST */
 .menu-header h1 {
   font-family: 'Helvetica Neue', system-ui, sans-serif;
   font-weight: 900;
@@ -109,7 +39,7 @@ body, html {
   width: 320px;
 }
 
-/* CONTRASTING SHARP BUTTON LAYER */
+/* 4. CONTRASTING SHARP BUTTON LAYER */
 .sharp-gradient-btn {
   border-radius: 0px !important;
   cursor: pointer;

@@ -13,12 +13,11 @@ function App() {
 
   useEffect(() => {
     const extendedWindow = window as unknown as {
-      qtWidget?: { webChannelTransport: unknown };
-      QtWebChannel?: unknown;
+      qt?: { webChannelTransport: unknown };
     }
 
-    if (extendedWindow.qtWidget) {
-      new QWebChannel(extendedWindow.qtWidget.webChannelTransport, (channel) => {
+    if (extendedWindow.qt && extendedWindow.qt.webChannelTransport) {
+      new QWebChannel(extendedWindow.qt.webChannelTransport, (channel) => {
         const backend = channel.objects.pyBack as QtBackendBridge
         setPyBackend(backend)
         setBackendStatus(() => "System Bridge Operational")

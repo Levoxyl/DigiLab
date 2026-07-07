@@ -1,9 +1,9 @@
 import os
+import sys
 
 from App.front.components.config import AppConfigComponent
 from App.front.components.button import ButtonComponent
 
-# Pull raw theme parameters from their new home inside the themes/ directory
 from App.front.themes.retro import retro_theme as retro_raw
 from App.front.themes.modern import modern_theme as modern_raw
 
@@ -36,23 +36,20 @@ class ThemeManager:
         theme_pack = self.get_theme(theme_id)
        
         if theme_pack.render_engine == "chromium":
-            import sys
-            import os
             from PyQt6.QtWidgets import QApplication, QMainWindow
 
             os.environ["QT_API"] = "pyqt6"
             os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-
-            # Native Windows rendering
-            os.environ["QT_QPA_PLATFORM"] = "windows"
+            os.environ["QTWEBENGINE_REMOTE_DEBUGGING"] = "9222"
             
             cleaned_args = [
                 "--no-sandbox",
-                "--ignore-gpu-blocklist",
-                "--enable-gpu-rasterization",
+                "--disable-web-security",
+                "--disable-gpu"
             ]
 
-            app = QApplication(cleaned_args)
+            # Combined system args with custom flags to prevent internal chromium launch failures
+            app = QApplication(sys.argv + cleaned_args)
             main_window = QMainWindow()
 
             main_window.setWindowTitle(theme_pack.config.window_title)

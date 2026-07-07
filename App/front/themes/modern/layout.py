@@ -33,7 +33,7 @@ class ThemeLayout:
 
         if self.IS_DEV_MODE:
             print("🔗 Connecting engine frame to live Vite local server...")
-            self.browser.load(QUrl("http://localhost:5173"))
+            self.browser.load(QUrl("http://172.27.127.59:5173"))
         else:
             dist_path = os.path.abspath(os.path.join(os.path.dirname(__file__),"dist", "index.html"))
             self.browser.setUrl(QUrl.fromLocalFile(dist_path))

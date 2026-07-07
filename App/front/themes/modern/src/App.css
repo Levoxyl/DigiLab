@@ -1,7 +1,6 @@
-/* 1. ALWAYS PLACE THIS IMPORT AT THE VERY TOP OF APP.CSS */
 @import "./styles/uiComponents/freeformGradient.css";
 
-/* 2. CORE LAYOUT ENGINE */
+/* CORE LAYOUT ENGINE */
 .dashboard-layout-engine {
   position: relative;
   z-index: 10;
@@ -12,19 +11,19 @@
   gap: 3.5rem;
 }
 
-/* 3. TYPOGRAPHY CONTRAST */
+/* TYPOGRAPHY CONTRAST */
 .menu-header h1 {
   font-family: 'Helvetica Neue', system-ui, sans-serif;
   font-weight: 900;
   font-size: 2.8rem;
   letter-spacing: 0.25rem;
-  color: #0b2620; 
+  color: #0b2620;
   margin: 0 0 0.5rem 0;
 }
 
 .menu-subtitle {
   font-family: monospace;
-  color: #1c5c4d; 
+  color: #1c5c4d;
   font-size: 0.9rem;
   letter-spacing: 0.08rem;
   font-weight: 600;
@@ -39,7 +38,7 @@
   width: 320px;
 }
 
-/* 4. CONTRASTING SHARP BUTTON LAYER */
+/* CONTRASTING SHARP BUTTON LAYER */
 .sharp-gradient-btn {
   border-radius: 0px !important;
   cursor: pointer;
@@ -48,13 +47,13 @@
   letter-spacing: 0.12rem;
   font-size: 0.85rem;
   padding: 1.2rem 1.75rem;
-  color: #cbe0da; 
+  color: #cbe0da;
   border: 3px solid transparent;
   text-align: left;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-  background-image: 
-    linear-gradient(#1cbf99, #148d6f), 
+  background-image:
+    linear-gradient(#1cbf99, #148d6f),
     linear-gradient(to right, #1baf8d, #4ade80);
   background-origin: border-box;
   background-clip: padding-box, border-box;
@@ -65,7 +64,7 @@
   transform: translateX(6px);
   box-shadow: 0 4px 20px rgba(27, 242, 192, 0.15);
 
-  background-image: 
-    linear-gradient(#148d6f, #1cbf99), 
+  background-image:
+    linear-gradient(#148d6f, #1cbf99),
     linear-gradient(to right, #4ade80, #1c5c4d);
 }

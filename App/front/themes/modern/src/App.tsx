@@ -8,7 +8,6 @@ interface QtBackendBridge {
 }
 
 function App() {
-  // Fix 1: Make the standalone text the default state to avoid synchronous updates inside useEffect
   const [backendStatus, setBackendStatus] = useState("Running in standalone browser mode (Backend detached)")
   const [pyBackend, setPyBackend] = useState<QtBackendBridge | null>(null)
 
@@ -38,10 +37,10 @@ function App() {
     }
   }
 
-  // Fix 2: Pass down the tracking values to clear the unused variable linter errors
+  // Pass down the tracking values to clear the unused variable linter errors
   return (
-    <LoginMenu 
-      backendStatus={backendStatus} 
+    <LoginMenu
+      backendStatus={backendStatus}
       onTriggerAnalysis={triggerBackendAnalysis}
     />
   )

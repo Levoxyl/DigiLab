@@ -1,5 +1,4 @@
 import React from 'react';
-/* Fix: Explicitly mapped relative directory stepping to target your uiComponents folder */
 import AbstractRiverBackground from '../styles/uiComponents/AbstractRiverBackground';
 
 interface LoginMenuProps {
